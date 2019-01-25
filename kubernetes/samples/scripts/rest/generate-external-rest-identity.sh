@@ -23,14 +23,18 @@
 # the self-signed certificate and private key
 #
 # Example usage:
-#   generate-external-rest-identity.sh IP:127.0.0.1 > my_values.yaml
+#   generate-external-rest-identity.sh IP:127.0.0.1 weblogic-operator > my_values.yaml
 #   echo "externalRestEnabled: true" >> my_values.yaml
 #   ...
 #   helm install kubernetes/charts/weblogic-operator --name my_operator --namespace my_operator-ns --values my_values.yaml --wait
-
-if [ "$#" != 1 ] ; then
-  1>&2 echo "Syntax: ${BASH_SOURCE[0]} <subject alternative names>"
+usage(){
+  echo "Syntax: ${BASH_SOURCE[0]} <subject alternative names> [-n namespace]"
   exit 1
+}
+
+if [ "$#" -lt 1 ] || [ "$#" -gt 3 ] ; then
+  1>&2
+  usage
 fi
 
 if [ ! -x "$(command -v keytool)" ]; then
@@ -67,12 +71,38 @@ function cleanup {
 }
 
 set -e
+#set -x
 
 trap "cleanup" EXIT
 
-#set -x
+while [ $# -gt 0 ]
+  do 
+    key="$1"
+    case $key in
+      -n|--namespace)
+      shift # past argument
+      if [ $# -eq 0 ]; then echo "Invalid namespace"; usage; fi
+      NAMESPACE=$1
+      shift # past value
+      ;;
+      *)
+      SANS=$1
+      shift
+      ;;  
+    esac    
+done
 
-SANS=$1
+if [ -z "$SANS" ]
+then
+  1>&2
+  usage
+fi
+
+if [ -z "$NAMESPACE" ]
+then
+  NAMESPACE="weblogic-operator"
+fi
+
 DAYS_VALID="3650"
 TEMP_PW="temp_password"
 OP_PREFIX="weblogic-operator"
@@ -129,17 +159,16 @@ openssl \
   -out ${OP_KEY_PEM} \
 2> /dev/null
 
-# Create the secret with the self-signed certificate and private key in the weblogic-operator namespace
-# kubectl create secret tls "weblogic-operator-certificate" --cert=${OP_CERT_PEM} --key=${OP_KEY_PEM} -n weblogic-operator
-# echo "externalCertificateSecret: weblogic-operator-certificate"
-
-# base64 encode the cert and private key pem
-CERT_DATA=`base64 -i ${OP_CERT_PEM} | tr -d '\n'`
-KEY_DATA=`base64 -i ${OP_KEY_PEM} | tr -d '\n'`
-
-# print out the cert and pem in the form that can be added to
-# the operator helm chart's values.yaml
-echo "externalOperatorCert: ${CERT_DATA}"
-echo "externalOperatorKey: ${KEY_DATA}"
+set +e
+# Check if namespace exist
+kubectl get namespace $NAMESPACE >/dev/null 2>/dev/null
+if [ $? -eq 1 ]; then
+  kubectl create namespace $NAMESPACE >/dev/null
+fi
+kubectl get secret weblogic-operator-certificate -n $NAMESPACE >/dev/null 2>/dev/null
+if [ $? -eq 1 ]; then
+  kubectl create secret tls "weblogic-operator-certificate" --cert=${OP_CERT_PEM} --key=${OP_KEY_PEM} -n $NAMESPACE >/dev/null
+fi
+echo "externalCertificateSecret: weblogic-operator-certificate"
 
 SUCCEEDED=true

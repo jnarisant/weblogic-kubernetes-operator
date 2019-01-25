@@ -256,6 +256,8 @@ public class Operator {
             + "/kubernetes/samples/scripts/rest/generate-external-rest-identity.sh "
             + "DNS:"
             + TestUtils.getHostName()
+            + " -n "
+            + operatorNS
             + " >> "
             + generatedInputYamlFile);
   }
