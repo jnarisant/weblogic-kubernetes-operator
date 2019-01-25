@@ -419,10 +419,10 @@ public class TestUtils {
     File certFile =
         new File(userProjectsDir + "/weblogic-operators/" + operatorNS + "/operator.cert.pem");
 
-    StringBuffer opCertCmd = new StringBuffer("kubectl get cm -n ");
+    StringBuffer opCertCmd = new StringBuffer("kubectl get secret -n ");
     opCertCmd
         .append(operatorNS)
-        .append(" weblogic-operator-cm -o jsonpath='{.data.externalOperatorCert}'");
+        .append(" weblogic-operator-certificate -o yaml | grep tls.crt | cut -d':' -f 2");
 
     ExecResult result = ExecCommand.exec(opCertCmd.toString());
     if (result.exitValue() != 0) {
@@ -440,7 +440,7 @@ public class TestUtils {
         .append(" | base64 --decode > ")
         .append(certFile.getAbsolutePath());
 
-    String decodedOpCert = ExecCommand.exec(opCertDecodeCmd.toString()).stdout().trim();
+    ExecCommand.exec(opCertDecodeCmd.toString()).stdout().trim();
     return certFile.getAbsolutePath();
   }
 
@@ -449,12 +449,10 @@ public class TestUtils {
     File keyFile =
         new File(userProjectsDir + "/weblogic-operators/" + operatorNS + "/operator.key.pem");
 
-    StringBuffer opKeyCmd = new StringBuffer("grep externalOperatorKey: ");
+    StringBuffer opKeyCmd = new StringBuffer("kubectl get secret -n ");
     opKeyCmd
-        .append(userProjectsDir)
-        .append("/weblogic-operators/")
         .append(operatorNS)
-        .append("/weblogic-operator-values.yaml | awk '{ print $2 }'");
+        .append(" weblogic-operator-certificate -o yaml | grep tls.key | cut -d':' -f 2");
 
     ExecResult result = ExecCommand.exec(opKeyCmd.toString());
     if (result.exitValue() != 0) {
@@ -467,7 +465,7 @@ public class TestUtils {
     StringBuffer opKeyDecodeCmd = new StringBuffer("echo ");
     opKeyDecodeCmd.append(opKey).append(" | base64 --decode > ").append(keyFile.getAbsolutePath());
 
-    String decodedOpKey = ExecCommand.exec(opKeyDecodeCmd.toString()).stdout().trim();
+    ExecCommand.exec(opKeyDecodeCmd.toString()).stdout().trim();
     return keyFile.getAbsolutePath();
   }
 

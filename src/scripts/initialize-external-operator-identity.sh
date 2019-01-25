@@ -45,7 +45,7 @@ function getExternalIdentity {
     -H "Authorization: Bearer $TOKEN" \
     -H "Content-Type: application/json" \
     -X GET \
-    $KUBERNETES_MASTER/api/v1/namespaces/weblogic-operator/secrets/$SECRET_NAME | \
+    $KUBERNETES_MASTER/api/v1/namespaces/$NAMESPACE/secrets/$SECRET_NAME | \
     python -c "import sys, json; print json.load(sys.stdin)['data']['tls.crt']" \
     >> ${EXTERNAL_CERT_PEM}
 
@@ -54,7 +54,7 @@ function getExternalIdentity {
     -H "Authorization: Bearer $TOKEN" \
     -H "Content-Type: application/json" \
     -X GET \
-    $KUBERNETES_MASTER/api/v1/namespaces/weblogic-operator/secrets/$SECRET_NAME | \
+    $KUBERNETES_MASTER/api/v1/namespaces/$NAMESPACE/secrets/$SECRET_NAME | \
     python -c "import sys, json; print json.load(sys.stdin)['data']['tls.key']" | base64 --decode \
     >> ${EXTERNAL_KEY_PEM}
 }
