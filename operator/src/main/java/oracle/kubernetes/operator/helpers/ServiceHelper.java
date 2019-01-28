@@ -638,7 +638,7 @@ public class ServiceHelper {
           }
           if (server.getListenPort() != null) {
             ports.putIfAbsent(
-                "default",
+                "http-default",
                 new V1ServicePort()
                     .name("http-default")
                     .port(server.getListenPort())
