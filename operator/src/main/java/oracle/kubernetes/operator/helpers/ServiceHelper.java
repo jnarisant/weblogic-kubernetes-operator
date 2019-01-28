@@ -127,7 +127,8 @@ public class ServiceHelper {
           }
         }
         if (scan.getListenPort() != null) {
-          ports.add(new V1ServicePort().name("default").port(scan.getListenPort()).protocol("TCP"));
+          ports.add(
+              new V1ServicePort().name("http-default").port(scan.getListenPort()).protocol("TCP"));
         }
         if (scan.getSslListenPort() != null) {
           ports.add(
@@ -637,8 +638,11 @@ public class ServiceHelper {
           }
           if (server.getListenPort() != null) {
             ports.putIfAbsent(
-                "default",
-                new V1ServicePort().name("default").port(server.getListenPort()).protocol("TCP"));
+                "http-default",
+                new V1ServicePort()
+                    .name("http-default")
+                    .port(server.getListenPort())
+                    .protocol("TCP"));
           }
           if (server.getSslListenPort() != null) {
             ports.putIfAbsent(
@@ -868,12 +872,12 @@ public class ServiceHelper {
           }
         }
         if (scan.getListenPort() != null) {
-          Channel c = getChannel("default");
+          Channel c = getChannel("http-default");
           if (c != null) {
             Integer nodePort = Optional.ofNullable(c.getNodePort()).orElse(scan.getListenPort());
             ports.add(
                 new V1ServicePort()
-                    .name("default")
+                    .name("http-default")
                     .port(scan.getListenPort())
                     .nodePort(nodePort)
                     .protocol("TCP"));

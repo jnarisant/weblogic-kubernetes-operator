@@ -176,7 +176,7 @@ public abstract class PodStepContext implements StepContextConstants {
       if (scan.getListenPort() != null) {
         ports.add(
             new V1ContainerPort()
-                .name("default")
+                .name("http-default")
                 .containerPort(scan.getListenPort())
                 .protocol("TCP"));
       }
