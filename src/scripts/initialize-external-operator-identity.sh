@@ -21,7 +21,7 @@ OPERATOR_SECRETS_DIR=${OPERATOR_DIR}/secrets
 # the operator runtime expects the external operator cert and private key to be in these files:
 EXTERNAL_CERT_PEM="${EXTERNAL_IDENTITY_DIR}/${EXTERNAL_CERT}"
 EXTERNAL_KEY_PEM="${EXTERNAL_IDENTITY_DIR}/${EXTERNAL_KEY}"
-EXTERNAL_CERT_SECRET="${OPERATOR_CONFIG_DIR}/externalCertificateSecret"
+EXTERNAL_CERT_SECRET="${OPERATOR_CONFIG_DIR}/externalRestIdentitySecret"
 
 # the legacy helm install mount the ceritificate and private key in the following locations:
 LEGACY_CERT_BASE64_PEM=${OPERATOR_CONFIG_DIR}/${EXTERNAL_CERT}

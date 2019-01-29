@@ -599,20 +599,11 @@ public class ITOperator extends BaseTest {
     if (operatorForBackwardCompatibility == null) {
       operatorForBackwardCompatibility = TestUtils.createOperator(opForBackwardCompatibility, true);
     }
-    logger.info("Creating Domain domain6 & verifing the domain creation");
-    // create domain6
-    Domain domain6 = null;
-    boolean testCompletedSuccessfully = false;
-    try {
-      domain6 = testDomainCreation(domain6YamlFile);
-      domain6.verifyDomainCreated();
-      testCompletedSuccessfully = true;
-    } finally {
-      if (domain6 != null && (JENKINS || testCompletedSuccessfully)) domain6.destroy();
-    }
-
-    logger.info("SUCCESS - test6CreateDomainWithStartPolicyAdminOnly");
+    logger.info("Operator using legacy REST identity created successfully");
+    operatorForBackwardCompatibility.destroy();
+    logger.info("SUCCESS - testRESTIdentityBackwardCompatibility");
   }
+
   /**
    * Create Operator and create domain with some junk value for t3 channel public address and using
    * custom situational config override replace with valid public address using secret Verify the

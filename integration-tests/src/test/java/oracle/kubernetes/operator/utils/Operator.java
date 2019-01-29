@@ -269,13 +269,14 @@ public class Operator {
     StringBuilder sb = new StringBuilder(200);
     sb.append(BaseTest.getProjectRoot());
     if (useLegacyRESTIdentity) {
-      sb.append("/integration-tests/src/test/resources/scripts/legacy-generate-external-rest-identity.sh ");
+      sb.append(
+          "/integration-tests/src/test/resources/scripts/legacy-generate-external-rest-identity.sh ");
     } else {
       sb.append("/kubernetes/samples/scripts/rest/generate-external-rest-identity.sh ");
       sb.append(" -n ");
       sb.append(operatorNS);
     }
-    sb.append("DNS:");
+    sb.append(" DNS:");
     sb.append(TestUtils.getHostName());
     sb.append(" >> ");
     sb.append(generatedInputYamlFile);
