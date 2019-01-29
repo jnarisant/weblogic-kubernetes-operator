@@ -15,12 +15,12 @@
 {{- if include "utils.verifyBoolean" (list $scope "externalRestEnabled") -}}
 {{-   if $scope.externalRestEnabled -}}
 {{-     $ignore := include "utils.verifyInteger" (list $scope "externalRestHttpsPort") -}}
-{{-     $ignore := include "utils.mutexString" (list $scope "externalCertificateSecret" (list "externalOperatorKey" "externalOperatorCert")) -}}
+{{-     $ignore := include "utils.mutexString" (list $scope "externalRestIdentitySecret" (list "externalOperatorKey" "externalOperatorCert")) -}}
 {{-     if (or (hasKey $scope "externalOperatorCert") (hasKey $scope "externalOperatorKey")) -}}
 {{-       $ignore := include "utils.verifyString"  (list $scope "externalOperatorCert") -}}
 {{-       $ignore := include "utils.verifyString"  (list $scope "externalOperatorKey") -}}
 {{-     else }}
-{{-       $ignore := include "utils.verifyString"  (list $scope "externalCertificateSecret") -}}
+{{-       $ignore := include "utils.verifyString"  (list $scope "externalRestIdentitySecret") -}}
 {{-     end -}}
 {{-   end -}}
 {{- end -}}

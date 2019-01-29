@@ -118,14 +118,14 @@ public class CreateOperatorInputsValidationIT extends OperatorChartITBase {
     setProperty("externalRestEnabled", true);
 
     removeProperty("externalRestHttpsPort");
-    removeProperty("externalCertificateSecret");
+    removeProperty("externalRestIdentitySecret");
     removeProperty("externalOperatorCert");
     removeProperty("externalOperatorKey");
 
     assertThat(
         getProcessingError(),
         allOf(
-            containsMissingStringParameterError("externalCertificateSecret"),
+            containsMissingStringParameterError("externalRestIdentitySecret"),
             containsMissingIntParameterError("externalRestHttpsPort")));
   }
 
@@ -160,13 +160,13 @@ public class CreateOperatorInputsValidationIT extends OperatorChartITBase {
   public void whenExternalRestEnabled_reportRelatedParameterErrors() throws Exception {
     setProperty("externalRestEnabled", true);
     setProperty("externalRestHttpsPort", "Not a number");
-    setProperty("externalCertificateSecret", 1234);
+    setProperty("externalRestIdentitySecret", 1234);
 
     assertThat(
         getProcessingError(),
         allOf(
             containsTypeError("externalRestHttpsPort", "float64", "string"),
-            containsTypeError("externalCertificateSecret", "string", "float64")));
+            containsTypeError("externalRestIdentitySecret", "string", "float64")));
   }
 
   @Test
@@ -174,7 +174,7 @@ public class CreateOperatorInputsValidationIT extends OperatorChartITBase {
     setProperty("externalRestEnabled", false);
 
     setProperty("externalRestHttpsPort", "Not a number");
-    setProperty("externalCertificateSecret", 1234);
+    setProperty("externalRestIdentitySecret", 1234);
     setProperty("externalOperatorCert", 1234);
     setProperty("externalOperatorKey", true);
 
@@ -185,15 +185,15 @@ public class CreateOperatorInputsValidationIT extends OperatorChartITBase {
   public void whenExternalOperatorSecret_ExcludeCertKeyErrors() throws Exception {
     setProperty("externalRestEnabled", true);
 
-    setProperty("externalCertificateSecret", "secretName");
+    setProperty("externalRestIdentitySecret", "secretName");
     setProperty("externalOperatorCert", "cert");
     setProperty("externalOperatorKey", "key");
 
     assertThat(
         getProcessingError(),
         allOf(
-            containsMutexParameterError("externalOperatorKey", "externalCertificateSecret"),
-            containsMutexParameterError("externalOperatorCert", "externalCertificateSecret")));
+            containsMutexParameterError("externalOperatorKey", "externalRestIdentitySecret"),
+            containsMutexParameterError("externalOperatorCert", "externalRestIdentitySecret")));
   }
 
   @Test

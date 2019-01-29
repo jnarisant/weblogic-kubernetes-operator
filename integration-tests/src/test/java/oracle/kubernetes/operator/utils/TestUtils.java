@@ -422,7 +422,8 @@ public class TestUtils {
     StringBuffer opCertCmd = new StringBuffer("kubectl get secret -n ");
     opCertCmd
         .append(operatorNS)
-        .append(" weblogic-operator-certificate -o yaml | grep tls.crt | cut -d':' -f 2");
+        .append(
+            " weblogic-operator-external-rest-identity -o yaml | grep tls.crt | cut -d':' -f 2");
 
     ExecResult result = ExecCommand.exec(opCertCmd.toString());
     if (result.exitValue() != 0) {
@@ -452,7 +453,8 @@ public class TestUtils {
     StringBuffer opKeyCmd = new StringBuffer("kubectl get secret -n ");
     opKeyCmd
         .append(operatorNS)
-        .append(" weblogic-operator-certificate -o yaml | grep tls.key | cut -d':' -f 2");
+        .append(
+            " weblogic-operator-external-rest-identity -o yaml | grep tls.key | cut -d':' -f 2");
 
     ExecResult result = ExecCommand.exec(opKeyCmd.toString());
     if (result.exitValue() != 0) {
@@ -478,9 +480,10 @@ public class TestUtils {
     return result.stdout().trim();
   }
 
-  public static Operator createOperator(String opYamlFile) throws Exception {
+  public static Operator createOperator(String opYamlFile, boolean useLegacyRESTIdentity)
+      throws Exception {
     // create op
-    Operator operator = new Operator(opYamlFile);
+    Operator operator = new Operator(opYamlFile, useLegacyRESTIdentity);
 
     logger.info("Check Operator status");
     operator.verifyPodCreated();
@@ -488,6 +491,10 @@ public class TestUtils {
     operator.verifyExternalRESTService();
 
     return operator;
+  }
+
+  public static Operator createOperator(String opYamlFile) throws Exception {
+    return createOperator(opYamlFile, false);
   }
 
   public static Domain createDomain(String inputYaml) throws Exception {
